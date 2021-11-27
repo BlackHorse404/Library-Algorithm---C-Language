@@ -9,6 +9,7 @@
 //khai báo thư viện
 #include<stdio.h>
 #include<stdlib.h>
+#include"PaintTree.h"
 //========================================
 //khai báo struct và constant
 #define LH -1 // trái > phải
@@ -105,22 +106,23 @@ void rorateLR(Tree &T)
 {
 	AVLNode *T1 = T->Left, *T2 = T1->Right;
 	T->Left = T2->Right;
-	T2->Right = T;
 	T1->Right = T2->Left;
 	T2->Left = T1;
+	T->Left = T2->Right;
+	T2->Right = T;
 	switch (T2->balFactor)
 	{
 	case LH:
-		T->balFactor = EH;
-		T1->balFactor = RH;
+		T->balFactor = RH;
+		T1->balFactor = EH;
 		break;
 	case EH:
 		T->balFactor = EH;
 		T1->balFactor = EH;
 		break;
 	case RH:
-		T->balFactor = LH;
-		T1->balFactor = EH;
+		T->balFactor = EH;
+		T1->balFactor = LH;
 		break;
 	}
 	T2->balFactor = EH;
@@ -136,10 +138,10 @@ void rorateRR(Tree &T)
 	{
 	case RH:
 		T->balFactor = EH;
-		T->balFactor = EH;
+		T1->balFactor = EH;
 		break;
 	case EH:
-		T->balFactor = EH;
+		T->balFactor = RH;
 		T1->balFactor = LH;
 		break;
 	}
@@ -149,21 +151,24 @@ void rorateRR(Tree &T)
 void rorateRL(Tree &T)
 {
 	AVLNode *T1 = T->Right, *T2 = T1->Left;
-	T->Right = T2->Left;
-	T2->Left = T;
 	T1->Left = T2->Right;
 	T2->Right = T1;
+	T->Right = T2->Left;
+	T2->Left = T;
 	switch (T2->balFactor)
 	{
 	case RH:
-		T->balFactor = EH;
-		T1->balFactor = LH; break;
+		T->balFactor = LH;
+		T1->balFactor = EH;
+		break;
 	case EH:
 		T->balFactor = EH;
-		T1->balFactor = EH; break;
+		T1->balFactor = EH;
+		break;
 	case LH:
-		T->balFactor = RH;
-		T1->balFactor = EH; break;
+		T->balFactor = EH;
+		T1->balFactor = RH;
+		break;
 	}
 	T2->balFactor = EH;
 	T = T2;
