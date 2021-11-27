@@ -1,9 +1,9 @@
 /*=========================================================================
 
-				Title:		CODE CÂY CÂN BẰNG AVL
-				Code By:	Nguyễn Đức Phát
-				FB:			fb.com/Phat.Lino.2K2
-				Git:		https://github.com/phatlino
+		Title:		CODE CÂY CÂN BẰNG AVL
+		Code By:	Nguyễn Đức Phát
+		FB:			fb.com/Phat.Lino.2K2
+		Git:		https://github.com/phatlino
 
 *///=======================================================================
 //khai báo thư viện
