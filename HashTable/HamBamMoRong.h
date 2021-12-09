@@ -1,271 +1,211 @@
 /*=========================================================================
-
-				Title:		CODE HÀM BĂM MỞ RỘNG
-				Code By:	Nguyễn Đức Phát
-				FB:			fb.com/Phat.Lino.2K2
-				Git:		https://github.com/phatlino
-
+		Title:		CODE HÀM BĂM TRỰC TIẾP
+		Code By:	Nguyễn Đức Phát
+		FB:			fb.com/Phat.Lino.2K2
+		Git:		https://github.com/phatlino
 *///=======================================================================
 //khai báo thư viện
 #include<stdio.h>
 #include<stdlib.h>
-#include<string.h>
-//==============================================
-//khai báo struct và constant
-#define SIZE 20
-#define TRUE 1
-#define FALSE 0
+#include<crtdbg.h>
+//===========================================
+//khai báo struct và constant, Biến public
+int size = 7;
+int soLuongPT = 0;
+int* arr;
+//===========================================
+//khai báo hàm con
+void iNitHashTableOpen();
+int hashTable(int key);
+void insertNodeLinear(int key);
+void insertNodeQuadratic(int key);
+void display();
+int keyIsEmpty(int k);
+void createHashTableOpenRandom();
+void createHashTableOpenArrayReady();
+void createHashTableOpenKeyBoard();
+void createHashTableOpenArrayReady_Quadratic();
+int findIndexKey(int key);
+int deleteByKey(int key);
 
-typedef int iTemTypeHash;
-
-typedef int iTemType;
-
-struct HashNode{
-	iTemType key;
-	HashNode *next;
-};
-
-typedef HashNode* NodePtr;
-NodePtr bucket[SIZE];
-//==============================================
-//khai báo hàm con - prototype
-
-//khởi tạo các bucket
-void iNitBucket();
-//hàm băm giá trị
-int hashFunction(iTemTypeHash k);
-//tạo HashNode hoàn chỉnh
-NodePtr createHashNode(iTemType k);
-//kiểm tra xem bucket co rỗng (1: rỗng, 0: không rỗng)
-int bucketIsEmpty(int vt);
-//thêm một key tại vị trí hash(vt)
-void push(int vt, iTemType k);
-//thêm một key vào bảng băm method 1 (hash(k) + i) mod MAXSIZE
-void insertLinearProbing_1(iTemType k);
-//thêm một key vào bảng băm method 2 (hash(k) + i*i) mod MAXSIZE
-void insertQuadraticProbing_2(iTemType k);
-//thêm một key vào bảng băm method 3 (hash(k) + i*hash(k)) mod MAXSIZE
-void insertDoubleHash_3(iTemType k);
-//kiểm tra xem bảng băm có rỗng (1: rỗng , 0: không rỗng)
-int isEmpty();
-//giải phóng HashNode p
-void freeNode(NodePtr &p);
-//lấy một Hash Node tại vị trí vt
-NodePtr pop(int vt);
-//xóa một HashNode sau HashNode P
-int deleteAfter(NodePtr p);
-//Xóa node k khỏi bảng băm
-void remove(iTemType k);
-//xóa/dọn sạch bucket tại vị trí vt
-void clearBucket(int vt);
-//xóa toàn bộ bảng băm
-void clear();
-//duyệt bucket tại vị trí vt
-void traverseBucket(int vt);
-//duyệt toàn bộ bảng băm
-void traverse();
-//tìm kiếm một key bất kì trên bảng băm -> trả về HashNode
-NodePtr findHashNode(iTemType k);
-//==============================================
-//==============================================
+//===========================================
+//===========================================
 //thân hàm con
+void iNitHashTableOpen()
+{
+	arr = new int[size];
+	for (int i = 0; i < size; i++)
+		arr[i] = -1;
+}
+int hashTable(int key)
+{
+	return key % size;
+}
 
-//khởi tạo các bucket
-void iNitBucket()
+void insertNodeQuadratic(int key)
 {
-	for (int i = 0; i < SIZE; i++)
-		bucket[i] = NULL;
-}
-//hàm băm giá trị
-int hashFunction(iTemTypeHash k)
-{
-	return k % SIZE;
-}
-//tạo HashNode hoàn chỉnh
-NodePtr createHashNode(iTemType k)
-{
-	HashNode *p = new HashNode;
-	if (!p)
-		return NULL;
-	p->key = k;
-	p->next = NULL;
-	return p;
-}
-//kiểm tra xem bucket co rỗng (1: rỗng, 0: không rỗng)
-int bucketIsEmpty(int vt)
-{
-	return !bucket[vt] ? TRUE : FALSE;
-}
-//thêm một key tại vị trí hash(vt)
-void push(int vt, iTemType k)
-{
-	NodePtr p = createHashNode(k);
-	if (!p)
-		return;
-	bucket[vt] = p;
-}
-//thêm một key vào bảng băm method 1 (hash(k) + i) mod MAXSIZE
-void insertLinearProbing_1(iTemType k)
-{
-	//phương pháp: (hash(k) + i) % MAXSIZE 
-	int vt = hashFunction(k);
-	if (bucketIsEmpty(vt))
-		push(vt, k);
-	else
+	int index = hashTable(key);
+	int solandungdo = 1;
+	if (soLuongPT > size * 0.6)
 	{
-		for (int i = 0; i < SIZE; i++)
+		int k = size;
+		//cấp phát lại
+		size *= 2;
+		arr = (int*)realloc(arr, size * sizeof(int));
+		//khởi tạo cho các phẩn tử mới cấp phát
+		for (int j = k; j < size; j++)
+			arr[j] = -1;
+		//kiểm tra vị trí giá trị
+		for (int i = 0; i < k; i++)
 		{
-			vt = (vt + i) % SIZE;
-			if (bucketIsEmpty(vt))
+			if (i != hashTable(arr[i]))
 			{
-				push(vt, k);
-				break;
+				index = hashTable(arr[i]);
+				solandungdo = 1;
+				while (arr[index] != -1)
+				{
+					index = (index + solandungdo * solandungdo) % size;
+					solandungdo++;
+				}
+				arr[index] = arr[i];
+				arr[i] = -1;
+			}
+		}
+	}
+	solandungdo = 1;
+	while (arr[index] != -1)
+	{
+		index = (index + solandungdo * solandungdo) % size;
+		solandungdo++;
+	}
+	arr[index] = key;
+	soLuongPT++;
+}
+
+void insertNodeLinear(int key)
+{
+	int index = hashTable(key);
+	int solandungdo = 1;
+	solandungdo = 1;
+	while (arr[index] != -1)
+	{
+		index = (index + solandungdo) % size;
+		solandungdo++;
+	}
+	arr[index] = key;
+	soLuongPT++;
+	//kiểm tra xem có cần phải resize max
+	if (soLuongPT > size * 0.6)
+	{
+		int k = size;
+		//cấp phát lại
+		size *= 2;
+		arr = (int*)realloc(arr, size * sizeof(int));
+		//khởi tạo cho các phẩn tử mới cấp phát
+		for (int j = k; j < size; j++)
+			arr[j] = -1;
+		//kiểm tra vị trí giá trị
+		for (int i = 0; i < k; i++)
+		{
+			if (i != hashTable(arr[i]))
+			{
+				index = hashTable(arr[i]);
+				solandungdo = 1;
+				while (arr[index] != -1)
+				{
+					index = (index + solandungdo) % size;
+					solandungdo++;
+				}
+				arr[index] = arr[i];
+				arr[i] = -1;
 			}
 		}
 	}
 }
-//thêm một key vào bảng băm method 2 (hash(k) + i*i) mod MAXSIZE
-void insertQuadraticProbing_2(iTemType k)
+void display()
 {
-	int vt = hashFunction(k);
-	if (bucketIsEmpty(vt))
-		push(vt, k);
-	else
+	for (int i = 0; i < size; i++)
 	{
-		for (int i = 0; i < SIZE; i++)
+		if (arr[i] != -1)
 		{
-			vt = (vt + (i*i)) % SIZE;
-			if (bucketIsEmpty(vt))
-			{
-				push(vt, k);
-				break;
-			}
+			printf("%02d | %5d ", i, arr[i]);
+			printf("\n");
 		}
 	}
 }
-//thêm một key vào bảng băm method 3 (hash(k) + i*hash(k)) mod MAXSIZE
-void insertDoubleHash_3(iTemType k)
+int deleteByKey(int key)
 {
-	//phương pháp: (hash(k) + i) % MAXSIZE 
-	int vt = hashFunction(k);
-	if (bucketIsEmpty(vt))
-		push(vt, k);
+	int index = hashTable(key), solandungdo = 1;
+	while (arr[index] != key && arr[index] != -1)
+		index = (solandungdo++ + index) % size;
+	if (arr[index] != -1)
+	{
+		arr[index] = -2;
+		soLuongPT--;
+	}
 	else
 	{
-		for (int i = 0; i < SIZE; i++)
-		{
-			vt = (vt + (i*vt)) % SIZE;
-			if (bucketIsEmpty(vt))
-			{
-				push(vt, k);
-				break;
-			}
-		}
+		printf("Khong co phan tu %d!", key);
+		return 0;
 	}
 }
-//kiểm tra xem bảng băm có rỗng (1: rỗng , 0: không rỗng)
-int isEmpty()
+int keyIsEmpty(int k)
 {
-	for (int i = 0; i < SIZE; i++)
-		if (!bucketIsEmpty(i))
-			return FALSE;
-	return TRUE;
+	int index = hashTable(k);
+	return arr[index] == -1 ? 1 : 0;
 }
-//giải phóng HashNode p
-void freeNode(NodePtr &p)
+
+void createHashTableOpenArrayReady()
 {
-	delete p;
-}
-//lấy một Hash Node tại vị trí vt
-NodePtr pop(int vt)
-{//null là không thể lấy ra do DS hashnode null
-	if (bucketIsEmpty(vt))
-		return NULL;
-	NodePtr p = bucket[vt];
-	bucket[vt] = p->next;
-	return p;
-}
-//xóa một HashNode sau HashNode P
-int deleteAfter(NodePtr p)
-{
-	if (!p || !p->next)
-		return FALSE;//khong the xoa
-	NodePtr q = p->next;
-	p->next = q->next;
-	freeNode(p);
-	return TRUE;//xoa thusername cong
-}
-//Xóa node k khỏi bảng băm
-void remove(iTemType k)
-{
-	NodePtr q, p;
-	int vt = hashFunction(k);
-	p = bucket[vt];
-	while (p && p->next)
+	//int x[10] = { 4, 2, 12, 6, 25, 7, 8, 11, 23, 33 };
+	int x[5] = { 1, 2, 3, 4, 2 };
+	for (int i = 0; i < 5; i++)
 	{
-		q = p;
-		p = p->next;
+		insertNodeLinear(x[i]);
 	}
-	if (!p)
-		printf("\nKhong co khoa '%d'", k);
-	else if (p == bucket[vt])
-		pop(vt);
-	else
-		deleteAfter(q);
 }
-//xóa/dọn sạch bucket tại vị trí vt
-void clearBucket(int vt)
+void createHashTableOpenKeyBoard()
 {
-	NodePtr q = NULL, p = bucket[vt];
-	while (p)
+	int x, i = 1;
+	do {
+		printf("\nNhap gia tri muon them vao (so thu %d): ", i++);
+		scanf("%d", &x);
+		if (x != -1)
+			insertNodeLinear(x);
+	} while (x != -1);
+}
+void createHashTableOpenRandom()
+{
+	int x;
+	for (int i = 0; i < size; i++)
 	{
-		q = p;
-		p = p->next;
-		freeNode(q);
+		x = 1 + rand() % 49;
+		insertNodeLinear(x);
 	}
-	bucket[vt] = NULL;
 }
-//xóa toàn bộ bảng băm
-void clear()
+
+int findIndexKey(int key)
 {
-	for (int i = 0; i < SIZE; i++)
-		clearBucket(i);
-}
-//duyệt bucket tại vị trí vt
-void traverseBucket(int vt)
-{
-	NodePtr p = bucket[vt];
-	while (p)
+	if (keyIsEmpty(key))
+		return -1;//không tồn tại key
+	int index = hashTable(key);
+	int solandungdo = 0;
+	while (arr[index] != key)//khác thì tìm
 	{
-		printf("[%d]->", p->key);
-		p = p->next;
-		if (!p)
-			printf("null");
+		index = (index + solandungdo) % size;
+		solandungdo++;
 	}
+	if (arr[index] == -1)
+		return -1;//tìm bị false
+	return index;//thành cong
 }
-//duyệt toàn bộ bảng băm
-void traverse()
+void createHashTableOpenArrayReady_Quadratic()
 {
-	for (int i = 0; i < SIZE; i++)
+	int x[10] = { 4, 2, 12, 6, 25, 7, 8, 11, 23, 33 };
+
+	for (int i = 0; i < 10; i++)
 	{
-		if (!bucketIsEmpty(i))
-		{
-			printf("\n%02d | ", i);
-			traverseBucket(i);
-			printf("\n----\n");
-		}
+		insertNodeQuadratic(x[i]);
 	}
 }
-//tìm kiếm một key bất kì trên bảng băm -> trả về HashNode
-NodePtr findHashNode(iTemType k)
-{
-	int vt = hashFunction(k);
-	NodePtr p = bucket[vt];
-	while (k > p->key && p)
-		p = p->next;
-	if (!p || k != p->key)
-		return NULL;
-	else
-		return p;
-}
-//==============================================
+//===========================================
